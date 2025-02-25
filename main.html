@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>던파 캐릭터 검색</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        input { padding: 5px; }
+        button { padding: 5px 10px; }
+        #result { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h2>던파 캐릭터 검색</h2>
+    <input type="text" id="characterName" placeholder="캐릭터 이름 입력">
+    <button onclick="searchCharacter()">검색</button>
+    <div id="result"></div>
+
+    <script>
+        async function searchCharacter() {
+            const name = document.getElementById('characterName').value;
+            if (!name) {
+                alert('캐릭터 이름을 입력하세요!');
+                return;
+            }
+            
+            const apiKey = '5rMCWRL09PzItb2wz1P8X4jNojye9GjZ'; // 네오플 API 키 입력
+            const serverId = 'all'; // 전체 서버 검색 (원하는 서버 지정 가능)
+            const url = `https://api.neople.co.kr/df/servers/${serverId}/characters?characterName=${name}&apikey=${apiKey}`;
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.rows.length === 0) {
+                    document.getElementById('result').innerHTML = '<p>캐릭터를 찾을 수 없습니다.</p>';
+                    return;
+                }
+                
+                const character = data.rows[0]; // 첫 번째 결과 사용
+                document.getElementById('result').innerHTML = `
+                    <p>이름: ${character.characterName}</p>
+                    <p>직업: ${character.jobName}</p>
+                    <p>명성: ${character.fame}</p>
+                    <p><img src="${character.characterImage}" alt="캐릭터 이미지"></p>
+                `;
+            } catch (error) {
+                console.error('API 요청 오류:', error);
+                document.getElementById('result').innerHTML = '<p>데이터를 불러오는 중 오류 발생</p>';
+            }
+        }
+    </script>
+</body>
+</html>
